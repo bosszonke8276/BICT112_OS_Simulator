@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>BICT112 OS Simulator</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-box">
+                OS
+            </div>
+
+            <div>
+                <h2>BICT112</h2>
+                <span>OS Simulator</span>
+            </div>
+
+        </div>
+
+
+        <nav>
+
+            <a href="#dashboard"
+               class="nav-link active">
+                Dashboard
+            </a>
+
+            <a href="#jobs"
+               class="nav-link">
+                Jobs / Processes
+            </a>
+
+            <a href="#memory"
+               class="nav-link">
+                Memory Manager
+            </a>
+
+            <a href="#cpu"
+               class="nav-link">
+                CPU Scheduler
+            </a>
+
+            <a href="#states"
+               class="nav-link">
+                Process States
+            </a>
+
+            <a href="#devices"
+               class="nav-link">
+                Device Manager
+            </a>
+
+            <a href="#events"
+               class="nav-link">
+                Event Log
+            </a>
+
+            <a href="#help"
+               class="nav-link">
+                Help / About
+            </a>
+
+        </nav>
+
+        <div class="sidebar-footer">
+
+            <strong>UMP</strong>
+
+            <span>
+                Computer Laboratory
+            </span>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>
+                    Computer Laboratory Resource Manager
+                </h1>
+
+                <p>
+                    BICT112 Operating Systems Mini Group Project
+                </p>
+
+            </div>
+
+            <div class="status">
+
+                <span class="status-dot"></span>
+
+                System Online
+
+            </div>
+
+        </header>
+
+
+        <!-- DASHBOARD -->
+
+        <section id="dashboard"
+                 class="section">
+
+            <div class="welcome">
+
+                <div>
+
+                    <h2>
+                        Operating System Dashboard
+                    </h2>
+
+                    <p>
+                        Manage jobs, memory, CPU scheduling
+                        and laboratory devices.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <div class="card-title">
+                        Total Jobs
+                    </div>
+
+                    <div class="card-number">
+                        {{ jobs|length }}
+                    </div>
+
+                    <div class="card-info">
+                        Registered processes
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-title">
+                        Memory Holes
+                    </div>
+
+                    <div class="card-number">
+                        {{ memory_holes|length }}
+                    </div>
+
+                    <div class="card-info">
+                        Available memory partitions
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-title">
+                        Printer
+                    </div>
+
+                    <div class="card-number printer-status">
+
+                        {% if printer_available %}
+                            Ready
+                        {% else %}
+                            Busy
+                        {% endif %}
+
+                    </div>
+
+                    <div class="card-info">
+                        Device status
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-title">
+                        Events
+                    </div>
+
+                    <div class="card-number">
+                        {{ event_log|length }}
+                    </div>
+
+                    <div class="card-info">
+                        System events
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- JOBS -->
+
+        <section id="jobs"
+                 class="section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Jobs / Processes
+                    </h2>
+
+                    <p>
+                        Add and monitor processes.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <h3>
+                    Add New Job
+                </h3>
+
+                <form method="POST"
+                      action="/add-job"
+                      class="job-form">
+
+                    <div class="form-group">
+
+                        <label>
+                            Job ID
+                        </label>
+
+                        <input
+                            type="text"
+                            name="job_id"
+                            placeholder="e.g. P5"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Memory (K)
+                        </label>
+
+                        <input
+                            type="number"
+                            name="memory"
+                            min="1"
+                            placeholder="e.g. 50"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            CPU Burst
+                        </label>
+
+                        <input
+                            type="number"
+                            name="cpu_burst"
+                            min="1"
+                            placeholder="e.g. 7"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Arrival Time
+                        </label>
+
+                        <input
+                            type="number"
+                            name="arrival_time"
+                            min="0"
+                            placeholder="e.g. 0"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Priority
+                        </label>
+
+                        <input
+                            type="number"
+                            name="priority"
+                            min="1"
+                            placeholder="e.g. 2"
+                            required>
+
+                    </div>
+
+
+                    <button type="submit"
+                            class="btn primary">
+
+                        + Add Job
+
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <div class="panel">
+
+                <h3>
+                    Current Processes
+                </h3>
+
+                {% if jobs %}
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                        <tr>
+
+                            <th>Process</th>
+                            <th>Memory</th>
+                            <th>Arrival</th>
+                            <th>CPU Burst</th>
+                            <th>Priority</th>
+                            <th>State</th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        {% for job in jobs %}
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    {{ job.process_id }}
+                                </strong>
+                            </td>
+
+                            <td>
+                                {{ job.memory }}K
+                            </td>
+
+                            <td>
+                                {{ job.arrival_time }}
+                            </td>
+
+                            <td>
+                                {{ job.burst_time }}
+                            </td>
+
+                            <td>
+                                {{ job.priority }}
+                            </td>
+
+                            <td>
+
+                                <span class="badge
+                                {% if job.state == 'Running' %}
+                                    running
+                                {% elif job.state == 'Waiting' %}
+                                    waiting
+                                {% elif job.state == 'Terminated' %}
+                                    terminated
+                                {% else %}
+                                    ready
+                                {% endif %}
+                                ">
+
+                                    {{ job.state }}
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                {% else %}
+
+                    <div class="empty">
+
+                        No processes have been added yet.
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+        <!-- MEMORY -->
+
+        <section id="memory"
+                 class="section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Memory Manager
+                    </h2>
+
+                    <p>
+                        Test First-Fit and Best-Fit allocation.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="button-row">
+
+                <a href="/memory/first-fit"
+                   class="btn primary">
+
+                    Run First-Fit
+
+                </a>
+
+                <a href="/memory/best-fit"
+                   class="btn secondary">
+
+                    Run Best-Fit
+
+                </a>
+
+                <a href="/memory/reset"
+                   class="btn">
+
+                    Reset Memory
+
+                </a>
+
+            </div>
+
+
+            <div class="panel">
+
+                <h3>
+                    Memory Holes
+                </h3>
+
+                <div class="memory-grid">
+
+                    {% for hole in memory_holes %}
+
+                    <div class="memory-block">
+
+                        <div class="memory-name">
+                            {{ hole.name }}
+                        </div>
+
+                        <div class="memory-size">
+                            {{ hole.size }}K
+                        </div>
+
+                        <div class="memory-status">
+
+                            {% if hole.free %}
+
+                                Free
+
+                            {% else %}
+
+                                Allocated
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CPU -->
+
+        <section id="cpu"
+                 class="section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        CPU Scheduler
+                    </h2>
+
+                    <p>
+                        Compare CPU scheduling algorithms.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="button-row">
+
+                <a href="/cpu/fcfs"
+                   class="btn primary">
+
+                    Run FCFS
+
+                </a>
+
+                <a href="/cpu/round-robin"
+                   class="btn secondary">
+
+                    Run Round Robin
+
+                </a>
+
+            </div>
+
+
+            <div class="panel">
+
+                <h3>
+                    Scheduling Processes
+                </h3>
+
+                <p class="info-text">
+
+                    Round Robin uses a time quantum of
+                    <strong>3</strong>.
+
+                </p>
+
+                <table>
+
+                    <thead>
+
+                    <tr>
+
+                        <th>Process</th>
+                        <th>Arrival</th>
+                        <th>Burst</th>
+                        <th>Priority</th>
+
+                    </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for process in jobs %}
+
+                    <tr>
+
+                        <td>
+                            {{ process.process_id }}
+                        </td>
+
+                        <td>
+                            {{ process.arrival_time }}
+                        </td>
+
+                        <td>
+                            {{ process.burst_time }}
+                        </td>
+
+                        <td>
+                            {{ process.priority }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- PROCESS STATES -->
+
+        <section id="states"
+                 class="section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Process States
+                    </h2>
+
+                    <p>
+                        Change the state of a process.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <form method="POST"
+                      action="/process-state"
+                      class="state-form">
+
+                    <div class="form-group">
+
+                        <label>
+                            Process
+                        </label>
+
+                        <select name="process_id"
+                                required>
+
+                            <option value="">
+                                Select process
+                            </option>
+
+                            {% for job in jobs %}
+
+                            <option value="{{ job.process_id }}">
+                                {{ job.process_id }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            New State
+                        </label>
+
+                        <select name="state"
+                                required>
+
+                            <option value="Ready">
+                                Ready
+                            </option>
+
+                            <option value="Running">
+                                Running
+                            </option>
+
+                            <option value="Waiting">
+                                Waiting
+                            </option>
+
+                            <option value="Terminated">
+                                Terminated
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <button class="btn primary"
+                            type="submit">
+
+                        Update State
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+
+        <!-- DEVICES -->
+
+        <section id="devices"
+                 class="section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Device Manager
+                    </h2>
+
+                    <p>
+                        Manage printer allocation.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="device-layout">
+
+                <div class="panel">
+
+                    <h3>
+                        Printer
+                    </h3>
+
+                    <div class="device-circle">
+
+                        {% if printer_available %}
+
+                            AVAILABLE
+
+                        {% else %}
+
+                            BUSY
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="button-row">
+
+                        <form method="POST"
+                              action="/printer/request">
+
+                            <select name="process_id"
+                                    required>
+
+                                <option value="">
+                                    Select process
+                                </option>
+
+                                {% for job in jobs %}
+
+                                <option value="{{ job.process_id }}">
+
+                                    {{ job.process_id }}
+
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                            <button class="btn primary"
+                                    type="submit">
+
+                                Request Printer
+
+                            </button>
+
+                        </form>
+
+
+                        <a href="/printer/release"
+                           class="btn secondary">
+
+                            Release Printer
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <h3>
+                        Printer Waiting Queue
+                    </h3>
+
+                    {% if printer_queue %}
+
+                        {% for process in printer_queue %}
+
+                            <div class="queue-item">
+
+                                {{ process }}
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <div class="empty">
+
+                            Queue is empty.
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- EVENTS -->
+
+        <section id="events"
+                 class="section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Event Log
+                    </h2>
+
+                    <p>
+                        System activity and actions.
+                    </p>
+
+                </div>
+
+                <a href="/clear-log"
+                   class="btn">
+
+                    Clear Log
+
+                </a>
+
+            </div>
+
+
+            <div class="panel">
+
+                {% if event_log %}
+
+                    {% for event in event_log %}
+
+                    <div class="event">
+
+                        <span class="event-number">
+                            {{ loop.index }}
+                        </span>
+
+                        <span>
+                            {{ event }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="empty">
+                        No events recorded.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+        <!-- HELP -->
+
+        <section id="help"
+                 class="section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Help / About
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel help-panel">
+
+                <h3>
+                    BICT112 Operating Systems Mini Group Project
+                </h3>
+
+                <p>
+
+                    The UMP Computer Laboratory Resource Manager
+                    is an educational operating system simulator
+                    developed to demonstrate fundamental operating
+                    system concepts.
+
+                </p>
+
+
+                <div class="help-grid">
+
+                    <div>
+
+                        <h4>
+                            Memory Management
+                        </h4>
+
+                        <p>
+                            First-Fit, Best-Fit and memory allocation.
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        <h4>
+                            CPU Scheduling
+                        </h4>
+
+                        <p>
+                            FCFS and Round Robin scheduling.
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        <h4>
+                            Process Management
+                        </h4>
+
+                        <p>
+                            Ready, Running, Waiting and Terminated states.
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        <h4>
+                            Device Management
+                        </h4>
+
+                        <p>
+                            Printer allocation and waiting queues.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <footer>
+
+            BICT112 • UMP Computer Laboratory Resource Manager
+
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
