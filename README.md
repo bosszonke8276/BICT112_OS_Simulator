@@ -3,14 +3,22 @@
 ## Project
 UMP Computer Laboratory Resource Manager
 
-## How to run
+## Run the website locally
 
-1. Install Python 3.
-2. Open this project folder in VS Code.
-3. Open the VS Code terminal.
-4. Run:
+Install Python 3, then run:
 
-python main.py
+```powershell
+python -m pip install -r requirements.txt
+python app.py
+```
+
+Open http://127.0.0.1:5000 in your browser. `main.py` starts the command-line simulator; `app.py` starts the website.
+
+## Deploy to Vercel
+
+Import this GitHub repository into Vercel and keep the project root as the Root Directory. The included `vercel.json`, `api/index.py`, and `requirements.txt` configure the Flask app as a Python function. No build command or output directory is needed.
+
+The simulator currently keeps jobs and event history in process memory. Vercel functions are temporary, so this data can reset between requests or deployments; persistent user data requires a database or another durable store.
 
 ## Current features
 
